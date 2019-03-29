@@ -1,0 +1,19 @@
+{
+  "name": "node-pachong",
+  "version": "1.0.0",
+  "description": "糖少 滴小爬虫",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/weijiyang/Node.js.git"
+  },
+  "author": "糖少",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/weijiyang/Node.js/issues"
+  },
+  "homepage": "https://github.com/weijiyang/Node.js#readme"
+}
