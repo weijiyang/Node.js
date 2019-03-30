@@ -15,5 +15,14 @@
   "bugs": {
     "url": "https://github.com/weijiyang/Node.js/issues"
   },
-  "homepage": "https://github.com/weijiyang/Node.js#readme"
+  "homepage": "https://github.com/weijiyang/Node.js#readme",
+  "devDependencies": {
+    "cheerio": "^1.0.0-rc.2",
+    "koa-router": "^7.4.0",
+    "koa-view": "^2.1.2",
+    "koa-views": "^6.1.5",
+    "koa2": "^2.0.0-alpha.7",
+    "superagent": "^5.0.2",
+    "supervisor": "^0.12.0"
+  }
 }
