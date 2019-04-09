@@ -1,11 +1,11 @@
 const path = require('fs');
 const Koa = require('koa');
+const views = require('koa-views')
+const render = require('koa-views-render')
 const app = new Koa();
-
 const Router = require('koa-router');
 const router = new Router();
 
-const views = require('koa-views');
 const superagent = require('superagent');
 const cheerio = require('cheerio');
 
