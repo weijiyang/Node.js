@@ -1,0 +1,32 @@
+
+<html>
+  <head>
+    <title><%= title %></title>
+    <style>
+      .picDiv{
+        box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);
+        display:flex;
+        margin: 20px;
+        margin: 20px;
+        align-items: center;
+      }
+      img {
+        width: 500px;
+        height: 300px;
+      }
+      a {
+        text-decoration: none;
+        color: skyblue;
+        margin-left: 50px;
+      }
+    </style>
+  </head>
+  <body>
+    <% for(var i = 0; i < itemLists.length; i++) {%>
+      <div class="picDiv">
+          <img src="<%= itemLists[i].imgUrl %>" alt="error">
+          <a href="<%= itemLists[i].href %>"><%= itemLists[i].title %></a>
+      </div>
+    <%}%>
+  </body>
+</html>
