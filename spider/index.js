@@ -19,7 +19,7 @@ function setEjs (ctx) {
             let src = $('.carousel-inner  .fp-one-imagen');
             let title = $('.carousel-inner .fp-one-cita-wrapper .fp-one-cita a');
             for (let index = 0; index < src.length ; index++) {
-                let i = {imgUrl: src[index].attribs.src, title: title[index].children[0].data || '获取失败', href: title[index].attribs.href||'获取失败'};
+                let i = {imgUrl: src[index].attribs.src, title: title[index].children[0].data || '获取失败', href: title[index].attribs.href||''};
                 itemLists.push(i);
                 // console.log(src[index].attribs.src, title[index].children[0].data, title[index].attribs.href);
             }

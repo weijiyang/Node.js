@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= title %></title>
+  <meta charset="UTF-8">
+  <!-- import CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <style>
+    #app {
+      padding-top: 40px;
+      transition: all .35s ease;
+    }
+    [v-cloak] {
+      display: none;
+    }
+    .content {
+      padding: 20px;
+    }
+    .search{
+      width: 600px;
+      text-align:center;
+      margin: 0 auto;
+    }
+    .icon {
+      padding: 0 10px;
+    }
+    .card {
+      width: 600px;
+      box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin: 0 auto;
+    }
+    .action {
+      position:absolute;
+      top: 50%;
+      right: 120px;
+      -webkit-transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" v-cloak>
+    <div class="content">
+      <div class="search">
+        <el-input placeholder="请输入搜索内容" v-model="searchText" class="input-with-select">
+          <el-button slot="append" icon="el-icon-search" @click="search"></el-button>
+        </el-input>
+      </div>
+    </div>
+    <div class="content">
+        <div class="card" v-loading="loading">
+            <el-collapse accordion v-show="todoList.length != 0">
+              <el-collapse-item v-for="(item, index) in todoList" :key="index">
+                <template slot="title">
+                  <div style="display:flex;justify-content: space-between;width: 560px;">
+                    <span><i :class="['icon', item.isFinished ? 'el-icon-circle-check' : 'el-icon-circle-close']"></i>{{item.title}}</span>
+                    <el-button type="text" size="mini" style="color: #F56C6C;" @click="handleDelete(item.id)">删除</el-button>
+                  </div>
+                </template>
+                <div>{{item.desc}}</div>
+              </el-collapse-item>
+            </el-collapse>
+        </div>
+    </div>
+    <div class="action">
+        <el-button type="success" icon="el-icon-plus" style="margin: 10px;" circle @click="dialogFormVisible = true"></el-button>
+        <el-popover
+          placement="bottom"
+          trigger="click">
+          <el-checkbox-group v-model="checkboxGroup" style="text-align:center;">
+            <el-checkbox-button :label="1">
+              <i class="el-icon-circle-check">已完成</i>
+            </el-checkbox-button>
+            <el-checkbox-button :label="2">
+              <i class="el-icon-circle-close">未完成</i>
+            </el-checkbox-button>
+          </el-checkbox-group>
+          <el-button slot="reference" type="warning" icon="el-icon-view" style="margin: 10px;" circle></el-button>
+        </el-popover>
+    </div>
+    <el-dialog title="新增任务项" :visible.sync="dialogFormVisible">
+      <el-form :model="form" :rules="rules" ref="form">
+        <el-form-item label="任务名称" prop="title">
+          <el-input v-model="form.title"></el-input>
+        </el-form-item>
+        <el-form-item label="任务描述" prop="desc">
+          <el-input type="textarea" v-model="form.desc"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="submit">确 定</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</body>
+  <!-- import Vue before Element -->
+  <script src="https://unpkg.com/vue/dist/vue.js"></script>
+  <!-- import JavaScript -->
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script>
+    new Vue({
+      el: '#app',
+      data: function() {
+        return {
+          loading: false,
+          dialogFormVisible: false,
+          form: {
+            isFinished: false,
+            title: '',
+            desc: ''
+          },
+          rules: {
+            title: [
+              { required: true, message: '任务名称不能为空', trigger: 'blur' }
+            ],
+            desc: [
+              { required: true, message: '详细介绍不能为空', trigger: 'blur' }
+            ]
+          },
+          searchText: '',
+          itemList: [],
+          checkboxGroup: [1, 2]
+        }
+      },
+      computed: {
+        todoList () {
+          if (this.checkboxGroup.length == 0) return []
+          if (this.checkboxGroup.length == 2) return this.itemList
+          if (this.checkboxGroup[0] == 1) {
+            return this.itemList.filter(item => {
+              return item.isFinished
+            })
+          } else {
+            return this.itemList.filter(item => {
+              return !item.isFinished
+            })
+          }
+        }
+      },
+      created () {
+        this.search()
+      },
+      methods: {
+        search () {
+          this.loading = true
+          axios.post('/search', {text: this.searchText}).then(res => {
+            this.itemList = res.data
+          }).catch(err => {
+            this.$message.error('请求出错， 请重试')
+          }).finally(end => {
+            this.loading = false
+          })
+        },
+        submit () {
+          this.$refs['form'].validate(valid => {
+            if (valid) {
+              this.loading = true
+              axios.post('/add', this.form).then(res => {
+                this.$message.success('新增任务成功')
+                this.$refs['form'].resetFields()
+                this.dialogFormVisible = false
+                this.search()
+              }).catch(err => {
+                this.$message.error('新增失败')
+              }).finally(end => {
+                this.loading = false
+              })
+            } else {
+              return false
+            }
+          })
+        },
+        handleDelete (id) {
+          axios.post('/delete', {id: id}).then(res => {
+            this.search()
+            this.$message.success('删除成功')
+          }).catch(err => {
+            this.$message.error('删除失败')
+          })
+        }
+      }
+    })
+  </script>
+</html>
