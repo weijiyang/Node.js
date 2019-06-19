@@ -5,13 +5,7 @@ const fs = require('fs');
 const ejs = require('ejs');
 const app = new Koa();
 const router = new Route();
-let id = 5;
-let baseList = [
-    { id: 1, title: '一致性 Consistency', desc: '与现实生活一致：与现实生活的流程、逻辑保持一致，遵循用户习惯的语言和概念；', isFinished: true },
-    { id: 2, title: '一致性 Consistency', desc: '与现实生活一致：与现实生活的流程、逻辑保持一致，遵循用户习惯的语言和概念；', isFinished: true },
-    { id: 3, title: '一致性 Consistency', desc: '与现实生活一致：与现实生活的流程、逻辑保持一致，遵循用户习惯的语言和概念；', isFinished: false },
-    { id: 4, title: '一致性 Consistency', desc: '与现实生活一致：与现实生活的流程、逻辑保持一致，遵循用户习惯的语言和概念；', isFinished: false }
-];
+const db = require('./mongoose.js');
 const routeSync = function (ctx) {
     return new Promise((response, reject) => {
         let template = ejs.compile(fs.readFileSync('./template/todolist.ejs', 'utf8'));
@@ -26,42 +20,40 @@ const routeSync = function (ctx) {
 router.get('/', routeSync);
 router.post('/search', ctx => {
     let param = ctx.request.body;
-    return new Promise((response, reject) => {
-        // 模拟模糊搜索
-        setTimeout(function () {
-            ctx.body = baseList.filter(item => {
-                return JSON.stringify(item).indexOf(param.text) > -1;
-            });
-            response(true);
-        }, 2000);
+    return new Promise((resolve, reject) => {
+        db.get(param.text).then(res => {
+            ctx.body = res || [];
+            resolve(true);
+        }).catch(err => {
+            console.log(err);
+            reject(false);
+        });
     });
 });
 router.post('/add', ctx => {
     let param = ctx.request.body;
-    return new Promise((response, reject) => {
-        setTimeout(function () {
-            baseList.push({
-                id: id++,
-                title: param.title,
-                desc: param.desc,
-                isFinished: param.isFinished || false
-            });
+    return new Promise((resolve, reject) => {
+        db.insert(param).then(res => {
             ctx.body = {};
-            response(true);
-        }, 1000);
+            resolve(true);
+        }).catch(err => {
+            console.log(err);
+            reject(false);
+        });
     });
 });
 router.post('/delete', ctx => {
     let param = ctx.request.body;
-    return new Promise((response, reject) => {
-        setTimeout(function () {
-            baseList = baseList.filter(item => {
-                return item.id != param.id;
-            });
-        }, 500);
-        ctx.body = {};
-        response(true);
+    return new Promise((resolve, reject) => {
+        db.del(param.id).then(res => {
+            ctx.body = {};
+            resolve(true);
+        }).catch(err => {
+            console.log(err);
+            reject(flase);
+        });
     });
+
 });
 app.use(bodyparser());
 app.use(router.routes());
