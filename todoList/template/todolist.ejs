@@ -56,7 +56,10 @@
                 <template slot="title">
                   <div style="display:flex;justify-content: space-between;width: 560px;">
                     <span><i :class="['icon', item.isFinished ? 'el-icon-circle-check' : 'el-icon-circle-close']"></i>{{item.title}}</span>
-                    <el-button type="text" size="mini" style="color: #F56C6C;" @click="handleDelete(item._id)">删除</el-button>
+                    <span>
+                      <el-button v-if="!item.isFinished" type="text" size="mini" style="color: #67C23A;" @click="handleFinished(item._id)">已完成</el-button>
+                      <el-button type="text" size="mini" style="color: #F56C6C;" @click="handleDelete(item._id)">删除</el-button>
+                    </span>
                   </div>
                 </template>
                 <div>{{item.desc}}</div>
@@ -157,19 +160,7 @@
         },
         submit () {
           this.$refs['form'].validate(valid => {
-            axios.post('/add', this.form).then(res => {
-                this.$message.success('新增任务成功')
-                this.$refs['form'].resetFields()
-                this.dialogFormVisible = false
-                this.search()
-              }).catch(err => {
-                this.$message.error('新增失败')
-              }).finally(end => {
-                this.loading = false
-              })
-            // if (valid) {
-            //   this.loading = true
-            //   axios.post('/add', this.form).then(res => {
+            // axios.post('/add', this.form).then(res => {
             //     this.$message.success('新增任务成功')
             //     this.$refs['form'].resetFields()
             //     this.dialogFormVisible = false
@@ -179,9 +170,31 @@
             //   }).finally(end => {
             //     this.loading = false
             //   })
-            // } else {
-            //   return false
-            // }
+            if (valid) {
+              this.loading = true
+              axios.post('/add', this.form).then(res => {
+                this.$message.success('新增任务成功')
+                this.$refs['form'].resetFields()
+                this.dialogFormVisible = false
+                this.search()
+              }).catch(err => {
+                this.$message.error('新增失败')
+              }).finally(end => {
+                this.loading = false
+              })
+            } else {
+              return false
+            }
+          })
+        },
+        handleFinished (id) {
+          axios.post('/update', {id: id}).then(res => {
+            this.search()
+            this.$message.success('状态更新成功')
+            debugger
+          }).catch(err => {
+            debugger
+            this.$message.error('状态更新失败')
           })
         },
         handleDelete (id) {

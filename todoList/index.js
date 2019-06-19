@@ -50,10 +50,21 @@ router.post('/delete', ctx => {
             resolve(true);
         }).catch(err => {
             console.log(err);
-            reject(flase);
+            reject(false);
         });
     });
-
+});
+router.post('/update', ctx => {
+    let param = ctx.request.body;
+    return new Promise((resolve, reject) => {
+        db.update(param.id).then(res => {
+            ctx.body = {};
+            resolve(true);
+        }).catch(err => {
+            console.log(err);
+            reject(false);
+        });
+    });
 });
 app.use(bodyparser());
 app.use(router.routes());

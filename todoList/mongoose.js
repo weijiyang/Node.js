@@ -55,10 +55,23 @@ const get = function (text) {
     });
 
 };
+const update = function (_id) {
+    return new Promise((resolve, reject) => {
+        myModel.findById(_id, function(err, item) {
+            if(err) reject(err);
+            item.isFinished = true;
+            item.save(function (err) {
+                if(err) reject(err);
+                resolve(true);
+            });
+        });
+    });
+};
 
 exports.get = get;
 exports.insert = insert;
 exports.del = del;
+exports.update = update;
 
 
 
