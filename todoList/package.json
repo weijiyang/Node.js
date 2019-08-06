@@ -1,0 +1,16 @@
+{
+  "name": "todolist",
+  "version": "1.0.0",
+  "description": "简单全栈技术",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node node_modules/@weijiyang/easy-tag",
+    "tip": "tag"
+  },
+  "author": "糖少",
+  "license": "ISC",
+  "dependencies": {
+    "@weijiyang/easy-tag": "^2.0.3"
+  }
+}
